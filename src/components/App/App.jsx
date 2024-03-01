@@ -1,14 +1,26 @@
-import { useState, useEffect } from 'react';
-import { nanoid } from 'nanoid';
+import { useEffect } from 'react';
 import PhonebookForm from '../PhonebookForm/PhonebookForm';
 import Filter from '../Filter/Filter';
 import ContactList from '../ContactList/ContactList';
-
 import { AppContainer, AppWrapper } from './App.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFilter } from '../../redux/reducers';
 
 const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.phonebook.contacts);
+  const filter = useSelector(state => state.phonebook.filter);
+
+  useEffect(() => {
+    const storedContacts = localStorage.getItem('contacts');
+    if (storedContacts) {
+      dispatch(addContact(JSON.parse(storedContacts)));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
   const addContact = ({ name, number }) => {
     const checkContactExist = contacts.some(
@@ -17,16 +29,16 @@ const App = () => {
     if (checkContactExist) {
       alert(`${name} is already in contacts`);
     } else {
-      setContacts(prev => [...prev, { name, number, id: nanoid() }]);
+      dispatch(addContact({ name, number }));
     }
   };
 
   const deleteContact = contactId => {
-    setContacts(prev => prev.filter(contact => contact.id !== contactId));
+    dispatch(deleteContact(contactId));
   };
 
   const handleChangeFilter = evt => {
-    setFilter(evt.target.value);
+    dispatch(setFilter(evt.target.value));
   };
 
   const getFilteredContacts = () => {
@@ -42,11 +54,13 @@ const App = () => {
   const loadContacts = () => {
     const savedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
     if (savedContacts.length > 0) {
-      setContacts(savedContacts);
+      savedContacts.forEach(contact => {
+        dispatch(addContact({ name: contact.name, number: contact.number }));
+      });
     }
   };
 
-  useEffect(loadContacts, []);
+  useEffect(loadContacts, [dispatch]);
 
   useEffect(saveContacts, [contacts]);
 
