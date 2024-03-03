@@ -5,11 +5,16 @@ import ContactList from '../ContactList/ContactList';
 import { AppContainer, AppWrapper } from './App.styled';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilter } from '../../redux/reducers';
+import { nanoid } from 'nanoid';
 
 const App = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.phonebook.contacts);
-  const filter = useSelector(state => state.phonebook.filter);
+  const contacts = useSelector(state => {
+    state.contacts.contacts;
+  });
+  const filter = useSelector(state => {
+    state.contacts.filter;
+  });
 
   useEffect(() => {
     const storedContacts = localStorage.getItem('contacts');
@@ -23,9 +28,16 @@ const App = () => {
   }, [contacts]);
 
   const addContact = ({ name, number }) => {
+    const newContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+
     const checkContactExist = contacts.some(
       contact => contact.name.toLowerCase() === name.toLowerCase()
     );
+
     if (checkContactExist) {
       alert(`${name} is already in contacts`);
     } else {
@@ -46,23 +58,6 @@ const App = () => {
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
   };
-
-  const saveContacts = () => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  };
-
-  const loadContacts = () => {
-    const savedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    if (savedContacts.length > 0) {
-      savedContacts.forEach(contact => {
-        dispatch(addContact({ name: contact.name, number: contact.number }));
-      });
-    }
-  };
-
-  useEffect(loadContacts, [dispatch]);
-
-  useEffect(saveContacts, [contacts]);
 
   return (
     <AppContainer>
