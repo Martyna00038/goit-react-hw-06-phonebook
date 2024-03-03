@@ -10,10 +10,10 @@ import { nanoid } from 'nanoid';
 const App = () => {
   const dispatch = useDispatch();
   const contacts = useSelector(state => {
-    state.contacts.contacts;
+    state.contact.contacts;
   });
   const filter = useSelector(state => {
-    state.contacts.filter;
+    state.contact.filter;
   });
 
   useEffect(() => {
