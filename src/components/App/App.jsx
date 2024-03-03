@@ -9,12 +9,8 @@ import { nanoid } from 'nanoid';
 
 const App = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => {
-    state.contact.contacts;
-  });
-  const filter = useSelector(state => {
-    state.contact.filter;
-  });
+  const contacts = useSelector(state => state.contact.contacts);
+  const filter = useSelector(state => state.contact.filter);
 
   useEffect(() => {
     const storedContacts = localStorage.getItem('contacts');
@@ -41,7 +37,7 @@ const App = () => {
     if (checkContactExist) {
       alert(`${name} is already in contacts`);
     } else {
-      dispatch(addContact({ name, number }));
+      dispatch(addContact(newContact));
     }
   };
 
