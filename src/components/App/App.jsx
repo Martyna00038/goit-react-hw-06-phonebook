@@ -4,18 +4,23 @@ import Filter from '../Filter/Filter';
 import ContactList from '../ContactList/ContactList';
 import { AppContainer, AppWrapper } from './App.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { setFilter } from '../../redux/reducers';
+import {
+  setFilter,
+  addContact,
+  setContacts,
+  deleteContacts,
+} from '../../redux/reducers';
 import { nanoid } from 'nanoid';
 
 const App = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contact.contacts);
-  const filter = useSelector(state => state.contact.filter);
+  const contacts = useSelector(state => state.contacts.contacts);
+  const filter = useSelector(state => state.contacts.filter);
 
   useEffect(() => {
     const storedContacts = localStorage.getItem('contacts');
     if (storedContacts) {
-      dispatch(addContact(JSON.parse(storedContacts)));
+      dispatch(setContacts(JSON.parse(storedContacts)));
     }
   }, [dispatch]);
 
@@ -23,7 +28,7 @@ const App = () => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
   }, [contacts]);
 
-  const addContact = ({ name, number }) => {
+  const handleAddContact = ({ name, number }) => {
     const newContact = {
       id: nanoid(),
       name,
@@ -41,8 +46,8 @@ const App = () => {
     }
   };
 
-  const deleteContact = contactId => {
-    dispatch(deleteContact(contactId));
+  const handleDeleteContact = contactId => {
+    dispatch(deleteContacts(contactId));
   };
 
   const handleChangeFilter = evt => {
@@ -59,12 +64,12 @@ const App = () => {
     <AppContainer>
       <AppWrapper>
         <h1>Phonebook</h1>
-        <PhonebookForm onSubmit={addContact} />
+        <PhonebookForm onSubmit={handleAddContact} />
         <h2>Contacts</h2>
         <Filter value={filter} onChange={handleChangeFilter} />
         <ContactList
           contacts={getFilteredContacts()}
-          onDeleteContact={deleteContact}
+          onDeleteContact={handleDeleteContact}
         />
       </AppWrapper>
     </AppContainer>
@@ -72,5 +77,3 @@ const App = () => {
 };
 
 export default App;
-
-//
